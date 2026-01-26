@@ -3267,7 +3267,7 @@
                 </div>
             </div>
 
-            <div class="topic-item">
+                 <div class="topic-item">
                 <div class="topic-bar">
                     <div class="check-wrapper">
                         <input type="checkbox" onchange="updateProgress()">
@@ -3287,7 +3287,30 @@
                         <button class="tab-btn" onclick="switchTab(this, 'ejer')">📝 50 Ejercicios</button>
                     </div>
 
-                   <div class="tab-content" data-tab="ejer">
+                    <div class="tab-content active" data-tab="expl">
+                        <div class="explanation-box">
+                            <h3>Clones Geométricos</h3>
+                            <p>Dos figuras son <strong>Congruentes</strong> si son idénticas (mismo tamaño y forma). Para saber si dos triángulos son gemelos, usamos 3 criterios:</p>
+                            <ul>
+                                <li><strong>LLL:</strong> Sus 3 Lados miden lo mismo.</li>
+                                <li><strong>LAL:</strong> Lado, Ángulo, Lado iguales.</li>
+                                <li><strong>ALA:</strong> Ángulo, Lado, Ángulo iguales.</li>
+                            </ul>
+                            <p><strong>Paralelas cortadas:</strong> Cuando una línea corta dos paralelas, se forman ángulos iguales en "Z" (Alternos Internos) y en "X" (Opuestos por el vértice).</p>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" data-tab="vid">
+                        <div style="background-color: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 2rem; text-align: center; margin: 1rem 0;">
+                            <h3 style="color: #1e293b; margin-top: 0; margin-bottom: 0.5rem;">🎥 Criterios de Congruencia</h3>
+                            <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 1.5rem;">Aprende a identificar triángulos gemelos.</p>
+                            <a href="https://youtu.be/ZvN4LS6cuVw?si=qEThCwu3e8rcu8_2" target="_blank" style="text-decoration: none; background-color: #ef4444; color: white; padding: 12px 25px; border-radius: 50px; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); display: inline-flex; align-items: center; gap: 8px;">
+                                <span>▶</span> Ver Video
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" data-tab="ejer">
     <div class="activity-group">
         <div class="activity-header" onclick="toggleActivity(this)">Actividad 1: Criterio LLL (Lado-Lado-Lado) ▼</div>
         <div class="activity-body">
@@ -3451,4 +3474,5 @@
 
 </body>
 </html>
+
 
