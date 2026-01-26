@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Telesecundaria - Querétaro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #059669;
+            --bg: #f1f5f9;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+        }
+        h1 { color: #1e293b; margin-bottom: 0.5rem; }
+        p { color: #64748b; margin-bottom: 2rem; }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+        }
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .btn-mate { color: var(--primary); border: 2px solid var(--primary); }
+        .btn-quimica { color: var(--secondary); border: 2px solid var(--secondary); }
+        
+        .card h2 { margin: 0.5rem 0; color: #1e293b; }
+        .card p { font-size: 0.9rem; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Centro de Aprendizaje Interactiva</h1>
+        <p>Telesecundaria - Querétaro | Elige una asignatura para comenzar</p>
+
+        <div class="menu-grid">
+            <a href="matematicas.html" class="card">
+                <div class="icon">📐</div>
+                <h2>Matemáticas III</h2>
+                <p>Álgebra, Geometría, Funciones y más.</p>
+                <div style="background:var(--primary); color:white; padding:10px 20px; border-radius:50px; font-weight:bold;">Entrar</div>
+            </a>
+
+            <a href="quimica.html" class="card">
+                <div class="icon">🧪</div>
+                <h2>Química</h2>
+                <p>Tabla Periódica, Modelos Atómicos y Enlaces.</p>
+                <div style="background:var(--secondary); color:white; padding:10px 20px; border-radius:50px; font-weight:bold;">Entrar</div>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
