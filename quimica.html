@@ -1,0 +1,996 @@
+<!DOC<!DOCTYPE html>
+<html lang="es">
+<head>
+
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Química Interactiva - Telesecundaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #059669; /* Verde Esmeralda */
+            --primary-dark: #065f46;
+            --secondary: #10b981;
+            --bg: #f0fdf4;
+            --accent: #f59e0b;
+        }
+
+
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            margin: 0; padding: 0; color: #1e293b;
+        }
+
+        .nav-header { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        .btn-back { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; color: var(--primary-dark); font-weight: 600; }
+
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+
+        /* Barra de Progreso Sticky */
+        .progress-container {
+            background: white; padding: 20px; border-radius: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 30px; position: sticky; top: 10px; z-index: 100;
+        }
+
+        .progress-bar-bg { background: #e2e8f0; height: 12px; border-radius: 10px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--secondary), var(--primary)); transition: width 0.5s ease; }
+
+        .level-card {
+            background: white; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            margin-bottom: 25px; border-left: 10px solid var(--primary); overflow: hidden;
+        }
+
+        .level-header { padding: 25px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .level-content { display: none; padding: 0 25px 25px; border-top: 1px solid #f1f5f9; }
+
+        .topic-item { margin-top: 20px; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+        .topic-bar { padding: 15px; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
+
+        .tabs { display: flex; gap: 5px; padding: 10px; background: #f1f5f9; }
+        .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        .tab-btn.active { background: var(--primary); color: white; }
+
+        .tab-content { display: none; padding: 20px; }
+        .tab-content.active { display: block; }
+
+        .explanation-box { line-height: 1.6; }
+        .example-box { background: #fff8e1; border-left: 5px solid var(--accent); padding: 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+        
+        .video-btn { display: inline-flex; align-items: center; gap: 10px; background: #ef4444; color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+
+        .activity-group { margin-bottom: 15px; border: 1px solid #d1fae5; border-radius: 10px; overflow: hidden; }
+        .activity-header { background: #d1fae5; padding: 12px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; }
+        .activity-body { display: none; padding: 15px; background: white; }
+        
+        .quiz-item { margin-bottom: 25px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px; }
+        .quiz-option { padding-left: 10px; line-height: 1.8; }
+        
+        .homework-tag { color: #b45309; font-weight: bold; font-size: 0.8rem; }
+    </style>
+
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="nav-header">
+        <a href="index.html" class="btn-back"><span>←</span> Volver al Menú Principal</a>
+    </div>
+
+    <div class="container">
+        <header style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: var(--primary-dark); margin:0;">Laboratorio de Química</h1>
+            <p style="color: #64748b;">Aprende la ciencia de la materia</p>
+        </header>
+
+        <div class="progress-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-weight: bold; color: var(--primary-dark);">Tu Avance</span>
+                <span id="progress-text" style="background: var(--primary); color: white; padding: 2px 12px; border-radius: 20px; font-size: 0.85rem;">0% Completado</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div id="progress-bar"></div>
+            </div>
+        </div>
+        <article class="level-card">
+            <div class="level-header" onclick="toggleLevel(this)">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div style="background: var(--primary); color:white; width:45px; height:45px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size: 1.2rem;">1</div>
+                    <div>
+                        <h2 style="margin:0; font-size:1.1rem;">Introducción a la Química</h2>
+                        <p style="margin:0; font-size:0.85rem; color:#64748b;">Materia y su clasificación</p>
+                    </div>
+                </div>
+                <span>▼</span>
+            </div>
+
+            <div class="level-content">
+                
+                <div class="topic-item">
+    <div class="topic-bar">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <input type="checkbox" class="topic-checkbox" onclick="updateProgress()">
+            <strong style="font-size: 0.95rem;">1.1 Materia y su Clasificación</strong>
+        </div>
+        <button onclick="toggleTopic(this)" style="background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem;">Abrir Tema</button>
+    </div>
+
+    <div class="topic-details" style="display:none;">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(this, 'expl')">📖 Guía de Estudio</button>
+            <button class="tab-btn" onclick="switchTab(this, 'vid')">🎥 Video Refuerzo</button>
+            <button class="tab-btn" onclick="switchTab(this, 'ejer')">📝 Actividades</button>
+        </div>
+
+        <div class="tab-content active" data-tab="expl">
+            <div class="explanation-box">
+                <h3 style="color:var(--primary-dark); border-bottom: 2px solid var(--primary); padding-bottom: 5px;">1. ¿Qué es la Materia?</h3>
+                <p>La <strong>Materia</strong> es todo lo que existe en el universo: tiene <strong>masa</strong> (se puede pesar) y ocupa un lugar en el espacio (tiene <strong>volumen</strong>).</p>
+                
+                <h4 style="color:var(--primary-dark);">¿Cómo se clasifica?</h4>
+                <p>Para entender el mundo, dividimos la materia en dos grandes categorías según cómo están unidos sus componentes:</p>
+
+                
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <h5 style="margin-top:0; color:var(--primary); font-size: 1.1rem;">A) Sustancias Puras</h5>
+                        <p style="font-size: 0.9rem;">Su composición es <strong>fija y constante</strong>. No se pueden separar por métodos físicos (como filtrar o colar).</p>
+                        <ul style="font-size: 0.85rem; padding-left: 20px;">
+                            <li><strong>Elementos:</strong> Sustancias formadas por un solo tipo de átomo. Están en la Tabla Periódica. <br><em>Ejemplo: Oro (Au), Hierro (Fe), Cobre (Cu).</em></li>
+                            <li><strong>Compuestos:</strong> Unión de 2 o más elementos diferentes. Se representan con una <strong>fórmula química</strong>. <br><em>Ejemplo: Agua (H2O), Sal (NaCl), Dióxido de carbono (CO2).</em></li>
+                        </ul>
+                    </div>
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <h5 style="margin-top:0; color:var(--primary); font-size: 1.1rem;">B) Mezclas</h5>
+                        <p style="font-size: 0.9rem;">Es la unión <strong>física</strong> de sustancias. Aquí cada componente mantiene su identidad y <strong>sí se pueden separar</strong> fácilmente.</p>
+                        <ul style="font-size: 0.85rem; padding-left: 20px;">
+                            <li><strong>Homogéneas:</strong> No puedes distinguir sus componentes a simple vista (una sola fase). <br><em>Ejemplo: Aire, refresco, bronce, café colado.</em></li>
+                            <li><strong>Heterogéneas:</strong> Se ven sus componentes a simple vista (dos o más fases). <br><em>Ejemplo: Ensalada, agua con aceite, sopa de verduras.</em></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <strong>💡 La analogía de Daniel Gallardo:</strong> 
+                    <p style="margin: 5px 0 0;">Imagina que las sustancias puras son como piezas de LEGO del mismo color pegadas con pegamento fuerte (unión química). Las mezclas son como tener las piezas sueltas en una caja; puedes meter la mano y separarlas cuando quieras (unión física).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" data-tab="vid">
+            <div style="text-align:center; padding: 30px;">
+                <h4 style="margin-bottom:10px;">🎥 Clase: Materia y su Clasificación</h4>
+                <p style="font-size:0.9rem; color:#64748b; margin-bottom:20px;">Mira esta video-clase de Daniel Gallardo si necesitas reforzar lo que leíste en la guía.</p>
+                <a href="https://www.youtube.com/watch?v=KzV0XwN3E9E" target="_blank" class="video-btn">
+                    <span>▶</span> Ver Video en YouTube
+                </a>
+            </div>
+        </div>
+
+        <div class="tab-content" data-tab="ejer">
+    
+    <div class="activity-group">
+        <div class="activity-header" onclick="toggleActivity(this)">Actividad 1: Cimientos de la Materia <span class="homework-tag">(TAREA)</span> <span>▼</span></div>
+        <div class="activity-body">
+            <p><strong>Indicación:</strong> Investiga y escribe en tu cuaderno la definición o el símbolo de los siguientes 10 puntos:</p>
+            <ol style="line-height: 2;">
+                <li>¿Qué es un átomo?</li>
+                <li>¿Qué es una molécula?</li>
+                <li>Símbolo químico del Hierro.</li>
+                <li>Símbolo químico del Cobre.</li>
+                <li>Símbolo químico del Oxígeno.</li>
+                <li>Símbolo químico del Oro.</li>
+                <li>Símbolo químico del Hidrógeno.</li>
+                <li>¿A qué categoría pertenece el NaCl (Sal)?</li>
+                <li>¿Cuál es el componente principal del Aire?</li>
+                <li>Explica por qué el agua con arena no es una sustancia pura.</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="activity-group">
+        <div class="activity-header" onclick="toggleActivity(this)">Actividad 2: ¿Pura o Mezcla? (10 ejercicios) <span>▼</span></div>
+        <div class="activity-body">
+            <p><strong>Indicación:</strong> Clasifica las siguientes 10 sustancias comunes como <strong>"Sustancia Pura"</strong> o <strong>"Mezcla"</strong>:</p>
+            <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; line-height: 2;">
+                <li>1. Agua destilada: ________</li>
+                <li>2. Jugo de uva: ________</li>
+                <li>3. Barra de Plata: ________</li>
+                <li>4. Refresco de cola: ________</li>
+                <li>5. Gas Helio: ________</li>
+                <li>6. Alcohol del 70%: ________</li>
+                <li>7. Sal de grano: ________</li>
+                <li>8. Humo de fogata: ________</li>
+                <li>9. Clavo de hierro: ________</li>
+                <li>10. Ensalada rusa: ________</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="activity-group">
+        <div class="activity-header" onclick="toggleActivity(this)">Actividad 3: Elementos vs Compuestos (10 ejercicios) <span>▼</span></div>
+        <div class="activity-body">
+            <p><strong>Indicación:</strong> Observa la representación química. Si es un solo símbolo es <strong>Elemento</strong>, si son dos o más símbolos es <strong>Compuesto</strong>:</p>
+            <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; line-height: 2;">
+                <li>1. Ag (Plata): ________</li>
+                <li>2. H₂O (Agua): ________</li>
+                <li>3. O₂ (Oxígeno): ________</li>
+                <li>4. CO₂ (Dióxido de Carbono): ________</li>
+                <li>5. Fe (Hierro): ________</li>
+                <li>6. NaCl (Sal): ________</li>
+                <li>7. C (Carbono): ________</li>
+                <li>8. C₆H₁₂O₆ (Azúcar): ________</li>
+                <li>9. Al (Aluminio): ________</li>
+                <li>10. HCl (Ácido): ________</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="activity-group">
+        <div class="activity-header" onclick="toggleActivity(this)">Actividad 4: El Mundo Microscópico <span class="homework-tag">(DIBUJO)</span> <span>▼</span></div>
+        <div class="activity-body">
+            <p><strong>Indicación:</strong> Daniel Gallardo explica que podemos representar la materia con "bolitas". Dibuja en tu cuaderno cómo se verían las partículas de estos 10 casos:</p>
+            <ul style="line-height: 1.8;">
+                <li><strong>1-3:</strong> Tres Elementos diferentes (usa un color distinto para cada uno).</li>
+                <li><strong>4-6:</strong> Tres Compuestos diferentes (dibuja bolitas pegadas de colores distintos).</li>
+                <li><strong>7-8:</strong> Dos Mezclas Homogéneas (bolitas mezcladas que se ven ordenadas).</li>
+                <li><strong>9-10:</strong> Dos Mezclas Heterogéneas (bolitas separadas en grupos arriba y abajo).</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="activity-group">
+        <div class="activity-header" onclick="toggleActivity(this)">Actividad 5: Examen de Diagnóstico (10 reactivos) <span>▼</span></div>
+        <div class="activity-body">
+            <p style="margin-bottom: 20px;"><strong>Indicación:</strong> Elige la respuesta correcta para cada caso. Son preguntas tipo examen de ingreso a la preparatoria.</p>
+            
+            <div class="quiz-item">
+                <p><strong>1. La unión física de dos o más sustancias se llama:</strong></p>
+                <div class="quiz-option">a) Átomo</div>
+                <div class="quiz-option">b) Mezcla</div>
+                <div class="quiz-option">c) Compuesto</div>
+            </div>
+
+            <div class="quiz-item">
+                <p><strong>2. El acero es una combinación de hierro y carbono que se ve uniforme. Es:</strong></p>
+                <div class="quiz-option">a) Mezcla Homogénea</div>
+                <div class="quiz-option">b) Sustancia Pura</div>
+                <div class="quiz-option">c) Mezcla Heterogénea</div>
+            </div>
+
+            <div class="quiz-item">
+                <p><strong>3. El símbolo "Au" representa al Oro puro. Es un:</strong></p>
+                <div class="quiz-option">a) Compuesto</div>
+                <div class="quiz-option">b) Elemento</div>
+                <div class="quiz-option">c) Mezcla</div>
+            </div>
+
+            <div class="quiz-item">
+                <p><strong>4. El Dióxido de Carbono (CO₂) es un:</strong></p>
+                <div class="quiz-option">a) Mezcla</div>
+                <div class="quiz-option">b) Compuesto</div>
+                <div class="quiz-option">c) Elemento</div>
+            </div>
+
+            <div class="quiz-item">
+                <p><strong>5. Si al combinar agua con arena se ven separados, es una mezcla:</strong></p>
+                <div class="quiz-option">a) Heterogénea</div>
+                <div class="quiz-option">b) Homogénea</div>
+                <div class="quiz-option">c) Sustancia Pura</div>
+            </div>
+
+            <div class="quiz-item">
+                <p><strong>6. Principal característica de las sustancias puras:</strong></p>
+                <div class="quiz-option">a) Composición variable</div>
+                <div class="quiz-option">b) Composición constante y fija</div>
+                <div class="quiz-option">c) Se separan por filtración</div>
+            </div>
+
+            <div class="quiz-item">
+                <p><strong>7. El Ozono (O₃) es un ejemplo de:</strong></p>
+                <div class="quiz-option">a) Elemento</div>
+                <div class="quiz-option">b) Compuesto</div>
+                <div class="quiz-option">c) Mezcla</div>
+            </div>
+
+            <div class="quiz-item">
+                <p><strong>8. La leche es una mezcla de tipo:</strong></p>
+                <div class="quiz-option">a) Homogénea</div>
+                <div class="quiz-option">b) Heterogénea</div>
+                <div class="quiz-option">c) Elemento puro</div>
+            </div>
+
+            <div class="quiz-item">
+                <p><strong>9. Si una sustancia tiene fórmula química definida, es una:</strong></p>
+                <div class="quiz-option">a) Mezcla</div>
+                <div class="quiz-option">b) Sustancia Pura</div>
+                <div class="quiz-option">c) Energía</div>
+            </div>
+
+            <div class="quiz-item">
+                <p><strong>10. ¿Qué tipo de mezcla es el bronce (Cobre + Estaño)?</strong></p>
+                <div class="quiz-option">a) Heterogénea</div>
+                <div class="quiz-option">b) Homogénea</div>
+                <div class="quiz-option">c) Compuesto</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+    <div class="topic-item">
+                    <div class="topic-bar">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" class="topic-checkbox" onclick="updateProgress()">
+                            <strong style="font-size: 0.95rem;">1.2 Propiedades de la Materia</strong>
+                        </div>
+                        <button onclick="toggleTopic(this)" style="background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem;">Abrir Tema</button>
+                    </div> <div class="topic-details" style="display:none;">
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(this, 'expl-1.2')">📖 Guía de Estudio</button>
+                            <button class="tab-btn" onclick="switchTab(this, 'vid-1.2')">🎥 Video Refuerzo</button>
+                            <button class="tab-btn" onclick="switchTab(this, 'ejer-1.2')">📝 Actividades</button>
+                        </div> <div class="tab-content active" data-tab="expl-1.2">
+                            <div class="explanation-box">
+                                <h3 style="color:var(--primary-dark); border-bottom: 2px solid var(--primary);">Características de la Materia</h3>
+                                <p>Para identificar y utilizar las sustancias, debemos conocer sus propiedades. Estas se dividen en dos grandes grupos dependiendo de si cambian o no al variar la cantidad de muestra.</p>
+
+                                
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                                    <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                        <h4 style="margin-top:0; color:var(--primary); font-size: 1rem;">1. Propiedades Extensivas</h4>
+                                        <p style="font-size: 0.85rem;">Dependen de cuánta materia hay. No sirven para identificar una sustancia pura porque su valor cambia con el tamaño.</p>
+                                        <ul style="font-size: 0.8rem; padding-left: 15px;">
+                                            <li><strong>Masa:</strong> Cantidad de materia (g, kg).</li>
+                                            <li><strong>Volumen:</strong> Espacio ocupado (ml, cm³).</li>
+                                            <li><strong>Peso:</strong> Fuerza de gravedad sobre la masa.</li>
+                                            <li><strong>Inercia:</strong> Resistencia a cambiar de movimiento.</li>
+                                        </ul>
+                                    </div>
+                                    <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                        <h4 style="margin-top:0; color:var(--primary); font-size: 1rem;">2. Propiedades Intensivas</h4>
+                                        <p style="font-size: 0.85rem;">Son constantes y no dependen de la cantidad. Son la "huella digital" de la sustancia.</p>
+                                        <ul style="font-size: 0.8rem; padding-left: 15px;">
+                                            <li><strong>Densidad:</strong> Masa por unidad de volumen.</li>
+                                            <li><strong>Viscosidad:</strong> Resistencia a fluir.</li>
+                                            <li><strong>Puntos de Fusión/Ebullición:</strong> Temperatura de cambios de estado.</li>
+                                            <li><strong>Dureza:</strong> Resistencia al rayado.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="example-box">
+                                    <strong>Ejemplo Práctico:</strong> 
+                                    <p style="margin: 5px 0 0;">Si tienes un vaso con agua y una alberca llena de agua, ambos tienen diferente <strong>volumen</strong> (Extensiva), pero ambos hierven exactamente a los 100°C (Intensiva).</p>
+                                </div>
+                            </div>
+                        </div> <div class="tab-content" data-tab="vid-1.2">
+                            <div style="text-align:center; padding: 30px;">
+                                <h4>🎥 Clase: Propiedades de la Materia</h4>
+                                <p style="font-size:0.9rem; color:#64748b; margin-bottom:20px;">Refuerza la diferencia entre propiedades intensivas y extensivas.</p>
+                                <a href="https://www.youtube.com/watch?v=S8pBOn4I0y8" target="_blank" class="video-btn">
+                                    <span>▶</span> Ver Clase de Apoyo
+                                </a>
+                            </div>
+                        </div> <div class="tab-content" data-tab="ejer-1.2">
+                            
+                            <div class="activity-group">
+                                <div class="activity-header" onclick="toggleActivity(this)">Actividad 1: Observación Técnica <span class="homework-tag">(TAREA)</span> <span>▼</span></div>
+                                <div class="activity-body">
+                                    <p>En tu cuaderno, elige 10 objetos de tu casa y completa una tabla con una propiedad extensiva (ej. pesa 200g) y una intensiva (ej. es de color azul) para cada uno.</p>
+                                </div>
+                            </div>
+
+                            <div class="activity-group">
+                                <div class="activity-header" onclick="toggleActivity(this)">Actividad 2: Clasificación (10 ejercicios) <span>▼</span></div>
+                                <div class="activity-body">
+                                    <p>Escribe <strong>(E)</strong> para Extensiva e <strong>(I)</strong> para Intensiva:</p>
+                                    <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; list-style:none; padding:0; line-height:2;">
+                                        <li>1. Longitud: ( )</li>
+                                        <li>2. Densidad: ( )</li>
+                                        <li>3. Punto de fusión: ( )</li>
+                                        <li>4. Volumen: ( )</li>
+                                        <li>5. Masa: ( )</li>
+                                        <li>6. Color: ( )</li>
+                                        <li>7. Solubilidad: ( )</li>
+                                        <li>8. Peso: ( )</li>
+                                        <li>9. Olor: ( )</li>
+                                        <li>10. Ductilidad: ( )</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="activity-group">
+    <div class="activity-header" onclick="toggleActivity(this)">Actividad 3: Problemas de Densidad (10 ejercicios) <span>▼</span></div>
+    <div class="activity-body">
+        <p><strong>Indicación:</strong> Resuelve en tu cuaderno aplicando la fórmula de la densidad. Recuerda que la unidad resultante es $g/cm^3$ o $g/ml$.</p>
+        <ol style="line-height:2;">
+            <li>Si un objeto tiene una masa de $50g$ y un volumen de $10cm^3$, ¿cuál es su densidad?</li>
+            <li>Un líquido ocupa $20ml$ y pesa $100g$. Calcula su densidad.</li>
+            <li>¿Cuál es la densidad de un bloque de madera de $200g$ que ocupa $250cm^3$?</li>
+            <li>Un metal tiene una masa de $150g$ y un volumen de $15cm^3$. ¿Cuál es su densidad?</li>
+            <li>Si $50ml$ de aceite tienen una masa de $45g$, ¿qué densidad tiene el aceite?</li>
+            <li>Calcula la densidad de una roca que pesa $300g$ y desplaza $100ml$ de agua.</li>
+            <li>Un cubo de aluminio de $27g$ ocupa $10cm^3$. Calcula su densidad.</li>
+            <li>¿Qué densidad tiene un gas que pesa $1.2g$ y ocupa $1000ml$?</li>
+            <li>Una sustancia de $80g$ ocupa un volumen de $40cm^3$. ¿Cuál es su densidad?</li>
+            <li>Un lingote pesa $500g$ y su volumen es de $50cm^3$. Calcula la densidad.</li>
+        </ol>
+    </div>
+</div>
+
+                            <div class="activity-group">
+                                <div class="activity-header" onclick="toggleActivity(this)">Actividad 4: Laboratorio Visual <span>▼</span></div>
+                                <div class="activity-body">
+                                    <p>Dibuja en tu cuaderno 10 ejemplos de objetos que flotan o se hunden en agua. Explica en cada dibujo si su densidad es mayor o menor a la del agua (1 g/cm³).</p>
+                                </div>
+                            </div>
+
+                            <div class="activity-group">
+                                <div class="activity-header" onclick="toggleActivity(this)">Actividad 5: Desafío de Admisión <span>▼</span></div>
+                                <div class="activity-body">
+                                    <p style="margin-bottom: 20px;"><strong>Indicación:</strong> Lee con atención y elige la respuesta correcta. Anótala en tu cuaderno.</p>
+                                    
+                                    <div class="quiz-item">
+                                        <p><strong>1. Propiedad que no permite identificar una sustancia pura porque depende del tamaño o cantidad:</strong></p>
+                                        <div class="quiz-option">a) Densidad</div>
+                                        <div class="quiz-option">b) Masa</div>
+                                        <div class="quiz-option">c) Punto de ebullición</div>
+                                    </div>
+
+                                    <div class="quiz-item">
+                                        <p><strong>2. ¿Cuál de las siguientes es una propiedad intensiva?</strong></p>
+                                        <div class="quiz-option">a) Peso</div>
+                                        <div class="quiz-option">b) Volumen</div>
+                                        <div class="quiz-option">c) Temperatura de fusión</div>
+                                    </div>
+
+                                    <div class="quiz-item">
+                                        <p><strong>3. Si un objeto flota en el agua, significa que su densidad es:</strong></p>
+                                        <div class="quiz-option">a) Mayor a 1 g/cm³</div>
+                                        <div class="quiz-option">b) Menor a 1 g/cm³</div>
+                                        <div class="quiz-option">c) Igual a 1 g/cm³</div>
+                                    </div>
+
+                                    <div class="quiz-item">
+                                        <p><strong>4. Es el espacio que ocupa un cuerpo en el universo:</strong></p>
+                                        <div class="quiz-option">a) Masa</div>
+                                        <div class="quiz-option">b) Longitud</div>
+                                        <div class="quiz-option">c) Volumen</div>
+                                    </div>
+
+                                    <div class="quiz-item">
+                                        <p><strong>5. Propiedad intensiva que mide la resistencia de un líquido a fluir:</strong></p>
+                                        <div class="quiz-option">a) Viscosidad</div>
+                                        <div class="quiz-option">b) Ductilidad</div>
+                                        <div class="quiz-option">c) Dureza</div>
+                                    </div>
+
+                                    <div class="quiz-item">
+                                        <p><strong>6. La temperatura a la cual una sustancia pasa de estado líquido a gaseoso se llama:</strong></p>
+                                        <div class="quiz-option">a) Punto de fusión</div>
+                                        <div class="quiz-option">b) Punto de ebullición</div>
+                                        <div class="quiz-option">c) Solubilidad</div>
+                                    </div>
+
+                                    <div class="quiz-item">
+                                        <p><strong>7. ¿Cuál de estos es un ejemplo de propiedad extensiva?</strong></p>
+                                        <div class="quiz-option">a) Color</div>
+                                        <div class="quiz-option">b) Sabor</div>
+                                        <div class="quiz-option">c) Peso</div>
+                                    </div>
+
+                                    <div class="quiz-item">
+                                        <p><strong>8. Si dividimos la masa de un objeto entre su volumen, obtenemos su:</strong></p>
+                                        <div class="quiz-option">a) Inercia</div>
+                                        <div class="quiz-option">b) Densidad</div>
+                                        <div class="quiz-option">c) Porosidad</div>
+                                    </div>
+
+                                    <div class="quiz-item">
+                                        <p><strong>9. Las propiedades organolépticas (olor, color, sabor) se clasifican como:</strong></p>
+                                        <div class="quiz-option">a) Extensivas</div>
+                                        <div class="quiz-option">b) Intensivas</div>
+                                        <div class="quiz-option">c) Químicas</div>
+                                    </div>
+
+                                    <div class="quiz-item" style="border-bottom: none;">
+                                        <p><strong>10. Un anillo de oro y una cadena de oro tienen el mismo brillo porque el brillo es una propiedad:</strong></p>
+                                        <div class="quiz-option">a) Intensiva</div>
+                                        <div class="quiz-option">b) Extensiva</div>
+                                        <div class="quiz-option">c) General</div>
+                                    </div>
+                                </div> </div> ``` </div> </div> </div> 
+
+                                ///
+
+                                <div class="topic-item">
+    <div class="topic-bar">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <input type="checkbox" class="topic-checkbox" onclick="updateProgress()">
+            <strong style="font-size: 0.95rem;">1.3 Cambios Físicos y Químicos</strong>
+        </div>
+        <button onclick="toggleTopic(this)" style="background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem;">Abrir Tema</button>
+    </div> <div class="topic-details" style="display:none;">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(this, 'expl-1.3')">📖 Guía de Estudio</button>
+            <button class="tab-btn" onclick="switchTab(this, 'vid-1.3')">🎥 Video Refuerzo</button>
+            <button class="tab-btn" onclick="switchTab(this, 'ejer-1.3')">📝 Actividades</button>
+        </div> <div class="tab-content active" data-tab="expl-1.3">
+            <div class="explanation-box">
+                <h3 style="color:var(--primary-dark); border-bottom: 2px solid var(--primary); padding-bottom: 5px;">Transformaciones de la Materia</h3>
+                <p>La materia está en constante cambio. Estas transformaciones se clasifican en dos tipos fundamentales dependiendo de si se altera o no la naturaleza interna de la sustancia.</p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                    <div style="background: #f0f9ff; padding: 15px; border-radius: 10px; border: 1px solid #bae6fd;">
+                        <h4 style="margin-top:0; color:#0369a1; font-size: 1rem;">1. Cambios Físicos</h4>
+                        <p style="font-size: 0.85rem;">Alteran el aspecto o estado, pero <strong>no producen nuevas sustancias</strong>. Son generalmente reversibles.</p>
+                        <ul style="font-size: 0.8rem; padding-left: 15px; line-height: 1.6;">
+                            <li><strong>Fusión:</strong> Hielo a agua líquida.</li>
+                            <li><strong>Mezclas:</strong> Disolver azúcar en café.</li>
+                            <li><strong>Fragmentación:</strong> Romper un cristal.</li>
+                        </ul>
+                    </div>
+                    <div style="background: #fff7ed; padding: 15px; border-radius: 10px; border: 1px solid #fed7aa;">
+                        <h4 style="margin-top:0; color:#9a3412; font-size: 1rem;">2. Cambios Químicos</h4>
+                        <p style="font-size: 0.85rem;">Los átomos se reorganizan para <strong>formar nuevas sustancias</strong>. Son irreversibles y cambian las propiedades originales.</p>
+                        <ul style="font-size: 0.8rem; padding-left: 15px; line-height: 1.6;">
+                            <li><strong>Oxidación:</strong> Un clavo oxidado.</li>
+                            <li><strong>Combustión:</strong> Quemar leña.</li>
+                            <li><strong>Fermentación:</strong> Elaboración de queso o yogurt.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <strong>Evidencias de un Cambio Químico:</strong> 
+                    <p style="margin: 5px 0 0; font-size: 0.9rem;">Sabrás que es cambio químico si observas: burbujeo (gas), emisión de luz/calor, cambio de color radical o formación de un sólido (precipitado).</p>
+                </div>
+            </div>
+        </div> <div class="tab-content" data-tab="vid-1.3">
+            <div style="text-align:center; padding: 30px;">
+                <h4>🎥 Clase: Cambios de la Materia</h4>
+                <a href="https://www.youtube.com/watch?v=S0K6_vX9UIs" target="_blank" class="video-btn">
+                    <span>▶</span> Ver Clase de Apoyo
+                </a>
+            </div>
+        </div> <div class="tab-content" data-tab="ejer-1.3">
+            
+            <div class="activity-group">
+                <div class="activity-header" onclick="toggleActivity(this)">Actividad 1: Bitácora Casera (10 registros) <span class="homework-tag">(TAREA)</span> <span>▼</span></div>
+                <div class="activity-body">
+                    <p>Observa 10 procesos cotidianos en tu casa (especialmente en la cocina o jardín) y clasifícalos en tu cuaderno como <strong>Físico</strong> o <strong>Químico</strong>, explicando por qué elegiste esa opción.</p>
+                </div>
+            </div>
+
+            <div class="activity-group">
+                <div class="activity-header" onclick="toggleActivity(this)">Actividad 2: Identificación (10 ejercicios) <span>▼</span></div>
+                <div class="activity-body">
+                    <p>Escribe <strong>(F)</strong> para Físico o <strong>(Q)</strong> para Químico:</p>
+                    <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; list-style:none; padding:0; line-height:2;">
+                        <li>1. Hervir agua: ( )</li>
+                        <li>2. Oxidación de un marco: ( )</li>
+                        <li>3. Doblar un alambre: ( )</li>
+                        <li>4. Cocinar carne: ( )</li>
+                        <li>5. Encender pirotecnia: ( )</li>
+                        <li>6. Secar ropa al sol: ( )</li>
+                        <li>7. Fotosíntesis: ( )</li>
+                        <li>8. Cortar papel: ( )</li>
+                        <li>9. Digestión: ( )</li>
+                        <li>10. Derretir mantequilla: ( )</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="activity-group">
+                <div class="activity-header" onclick="toggleActivity(this)">Actividad 3: El Ciclo de los Cambios (10 ejercicios) <span>▼</span></div>
+                <div class="activity-body">
+                    <p><strong>Indicación:</strong> Relaciona en tu cuaderno el nombre del cambio (Columna A) con su definición correcta (Columna B). Las opciones están desordenadas, ¡analiza con cuidado!</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.85rem;">
+                        <div>
+                            <strong>Columna A (Cambio)</strong>
+                            <ol>
+                                <li>Fusión</li>
+                                <li>Solidificación</li>
+                                <li>Vaporización</li>
+                                <li>Condensación</li>
+                                <li>Sublimación</li>
+                                <li>Deposición</li>
+                                <li>Ebullición</li>
+                                <li>Evaporación</li>
+                                <li>Licuefacción</li>
+                                <li>Cristalización</li>
+                            </ol>
+                        </div>
+                        <div>
+                            <strong>Columna B (Definición)</strong>
+                            <ul style="list-style-type: none; padding: 0;">
+                                <li>( ) Gas a sólido sin pasar por líquido.</li>
+                                <li>( ) Líquido a gas en toda la masa del líquido.</li>
+                                <li>( ) Sólido a líquido.</li>
+                                <li>( ) Formación de un sólido con estructura ordenada.</li>
+                                <li>( ) Líquido a sólido.</li>
+                                <li>( ) Gas a líquido por aumento de presión.</li>
+                                <li>( ) Líquido a gas solo en la superficie.</li>
+                                <li>( ) Sólido a gas sin pasar por líquido.</li>
+                                <li>( ) Gaseoso a líquido por enfriamiento.</li>
+                                <li>( ) Cambio general de líquido a estado gaseoso.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div> <div class="activity-group">
+                <div class="activity-header" onclick="toggleActivity(this)">Actividad 4: Detective de Reacciones <span>▼</span></div>
+                <div class="activity-body">
+                    <p><strong>Indicación:</strong> En los cambios químicos siempre hay una pista visual. Escribe qué <strong>evidencia</strong> se observa en estos 10 casos (Efervescencia, Cambio de color, Luz/Calor o Precipitado):</p>
+                    <ul style="line-height: 2;">
+                        <li>1. Una fogata encendida: _________</li>
+                        <li>2. Una tableta efervescente en agua: _________</li>
+                        <li>3. Un clavo que se pone café-rojizo: _________</li>
+                        <li>4. Bicarbonato con vinagre: _________</li>
+                        <li>5. Carne dejada fuera del refrigerador (olor/color): _________</li>
+                        <li>6. El motor de un coche funcionando (calor): _________</li>
+                        <li>7. Una manzana mordida que se pone negra: _________</li>
+                        <li>8. Mezclar dos líquidos y que aparezca un polvo al fondo: _________</li>
+                        <li>9. Fuegos artificiales explotando: _________</li>
+                        <li>10. El proceso de cocción de un huevo: _________</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="activity-group">
+                <div class="activity-header" onclick="toggleActivity(this)">Actividad 5: Desafío de Admisión (10 Reactivos) <span>▼</span></div>
+                <div class="activity-body">
+                    <div class="quiz-item">
+                        <p><strong>1. ¿Qué define a un cambio químico?</strong></p>
+                        <div class="quiz-option">a) El cambio es reversible.</div>
+                        <div class="quiz-option">b) Se forman nuevas sustancias.</div>
+                        <div class="quiz-option">c) Solo cambia el tamaño.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>2. Es un ejemplo de cambio físico:</strong></p>
+                        <div class="quiz-option">a) Respiración.</div>
+                        <div class="quiz-option">b) Sublimación del yodo.</div>
+                        <div class="quiz-option">c) Combustión.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>3. La formación de óxido en una cadena es un cambio:</strong></p>
+                        <div class="quiz-option">a) Químico.</div>
+                        <div class="quiz-option">b) Físico.</div>
+                        <div class="quiz-option">c) De posición.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>4. ¿Qué nombre recibe el paso de gas a líquido?</strong></p>
+                        <div class="quiz-option">a) Fusión.</div>
+                        <div class="quiz-option">b) Condensación.</div>
+                        <div class="quiz-option">c) Evaporación.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>5. La fotosíntesis es un cambio químico porque:</strong></p>
+                        <div class="quiz-option">a) La planta cambia de color.</div>
+                        <div class="quiz-option">b) Se produce glucosa y oxígeno (nuevas sustancias).</div>
+                        <div class="quiz-option">c) El sol calienta las hojas.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>6. ¿Cuál es una evidencia de cambio químico en el bicarbonato con vinagre?</strong></p>
+                        <div class="quiz-option">a) Cambio de estado sólido.</div>
+                        <div class="quiz-option">b) Efervescencia (desprendimiento de gas).</div>
+                        <div class="quiz-option">c) No hay cambio.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>7. El paso de sólido a gas sin pasar por líquido se llama:</strong></p>
+                        <div class="quiz-option">a) Sublimación.</div>
+                        <div class="quiz-option">b) Deposición.</div>
+                        <div class="quiz-option">c) Licuefacción.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>8. Quemar un papel es un cambio irreversible, por lo tanto es:</strong></p>
+                        <div class="quiz-option">a) Físico.</div>
+                        <div class="quiz-option">b) Químico.</div>
+                        <div class="quiz-option">c) Fusión.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>9. Romper una hoja de papel en 100 pedazos es un cambio:</strong></p>
+                        <div class="quiz-option">a) Químico.</div>
+                        <div class="quiz-option">b) Físico.</div>
+                        <div class="quiz-option">c) De composición.</div>
+                    </div>
+                    <div class="quiz-item" style="border-bottom:none;">
+                        <p><strong>10. La digestión de alimentos es un proceso:</strong></p>
+                        <div class="quiz-option">a) Meramente físico.</div>
+                        <div class="quiz-option">b) Químico complejo.</div>
+                        <div class="quiz-option">c) De fragmentación simple.</div>
+                    </div>
+                </div> </div> </div> </div> </div> 
+
+<div class="topic-item">
+    <div class="topic-bar">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <input type="checkbox" class="topic-checkbox" onclick="updateProgress()">
+            <strong style="font-size: 0.95rem;">1.4 Métodos de Separación de Mezclas</strong>
+        </div>
+        <button onclick="toggleTopic(this)" style="background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem;">Abrir Tema</button>
+    </div> <div class="topic-details" style="display:none;">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(this, 'expl-1.4')">📖 Guía de Estudio</button>
+            <button class="tab-btn" onclick="switchTab(this, 'vid-1.4')">🎥 Video Refuerzo</button>
+            <button class="tab-btn" onclick="switchTab(this, 'ejer-1.4')">📝 Actividades</button>
+        </div> <div class="tab-content active" data-tab="expl-1.4">
+            <div class="explanation-box">
+                <h3 style="color:var(--primary-dark); border-bottom: 2px solid var(--primary); padding-bottom: 5px;">Separando los Componentes</h3>
+                <p>Las mezclas pueden separarse mediante <strong>métodos físicos</strong> sin alterar la naturaleza química de las sustancias. Para elegir el método correcto, debemos identificar las <strong>propiedades físicas</strong> que diferencian a los componentes (densidad, punto de ebullición, magnetismo, etc.).</p>
+
+                
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                    <div style="background: #f0fdf4; padding: 15px; border-radius: 10px; border: 1px solid #d1fae5;">
+                        <h4 style="margin-top:0; color:var(--primary-dark); font-size: 0.95rem;">Para Mezclas Heterogéneas</h4>
+                        <ul style="font-size: 0.8rem; padding-left: 15px; line-height: 1.6;">
+                            <li><strong>Filtración:</strong> Separa sólidos insolubles de líquidos usando un medio poroso.</li>
+                            <li><strong>Decantación:</strong> Separa líquidos inmiscibles (no se mezclan) por diferencia de densidad.</li>
+                            <li><strong>Imantación:</strong> Separa materiales ferromagnéticos (hierro, cobalto, níquel).</li>
+                            <li><strong>Tamizado:</strong> Separa sólidos de distintos tamaños mediante una malla.</li>
+                        </ul>
+                    </div>
+                    <div style="background: #f0fdf4; padding: 15px; border-radius: 10px; border: 1px solid #d1fae5;">
+                        <h4 style="margin-top:0; color:var(--primary-dark); font-size: 0.95rem;">Para Mezclas Homogéneas</h4>
+                        <ul style="font-size: 0.8rem; padding-left: 15px; line-height: 1.6;">
+                            <li><strong>Destilación:</strong> Separa líquidos solubles con distintos puntos de ebullición.</li>
+                            <li><strong>Evaporación:</strong> Recupera un sólido disuelto eliminando el líquido por calor.</li>
+                            <li><strong>Cromatografía:</strong> Separa componentes por su velocidad de desplazamiento en un medio.</li>
+                            <li><strong>Cristalización:</strong> Purifica sólidos disueltos formando cristales al enfriar.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <strong>Dato Técnico:</strong> 
+                    <p style="margin: 5px 0 0; font-size: 0.9rem;">La <strong>Centrifugación</strong> utiliza la fuerza giratoria para acelerar la sedimentación de partículas sólidas en un líquido. Es esencial en análisis clínicos de sangre.</p>
+                </div>
+            </div>
+        </div> <div class="tab-content" data-tab="vid-1.4">
+            <div style="text-align:center; padding: 30px;">
+                <h4>🎥 Clase: Técnicas de Separación</h4>
+                <p style="font-size:0.9rem; color:#64748b; margin-bottom:20px;">Observa los experimentos de separación en laboratorio.</p>
+                <a href="https://www.youtube.com/watch?v=Xp06vO_R1Vw" target="_blank" class="video-btn">
+                    <span>▶</span> Ver Clase de Apoyo
+                </a>
+            </div>
+        </div> <div class="tab-content" data-tab="ejer-1.4">
+            
+            <div class="activity-group">
+                <div class="activity-header" onclick="toggleActivity(this)">Actividad 1: Selección del Método (10 casos) <span class="homework-tag">(TAREA)</span> <span>▼</span></div>
+                <div class="activity-body">
+                    <p>Indica en tu cuaderno qué método físico usarías para separar estas mezclas:</p>
+                    <ol style="columns: 2; line-height: 2;">
+                        <li>Piedras y arena fina: _______</li>
+                        <li>Agua y aceite vegetal: _______</li>
+                        <li>Agua de mar (obtener sal): _______</li>
+                        <li>Limadura de hierro y aserrín: _______</li>
+                        <li>Alcohol y agua: _______</li>
+                        <li>Frijoles crudos y tierra: _______</li>
+                        <li>Tinta negra (ver sus colores): _______</li>
+                        <li>Jugo de limón con semillas: _______</li>
+                        <li>Clips metálicos y papel: _______</li>
+                        <li>Sangre (plasma y células): _______</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="activity-group">
+                <div class="activity-header" onclick="toggleActivity(this)">Actividad 2: Fundamento Físico (10 ejercicios) <span>▼</span></div>
+                <div class="activity-body">
+                    <p>Escribe qué propiedad física aprovecha cada método (Densidad, P. Ebullición, Magnetismo, Tamaño, Solubilidad, Velocidad de absorción):</p>
+                    <ol style="line-height: 2;">
+                        <li>Tamizado: _________________</li>
+                        <li>Decantación: _________________</li>
+                        <li>Destilación: _________________</li>
+                        <li>Imantación: _________________</li>
+                        <li>Filtración: _________________</li>
+                        <li>Evaporación: _________________</li>
+                        <li>Centrifugación: _________________</li>
+                        <li>Cristalización: _________________</li>
+                        <li>Cromatografía: _________________</li>
+                        <li>Levigación: _________________</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="activity-group">
+                <div class="activity-header" onclick="toggleActivity(this)">Actividad 3: Relación de Columnas <span>▼</span></div>
+                <div class="activity-body">
+                    <p>Relaciona en tu cuaderno el método con su descripción (opciones desordenadas):</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
+                        <div>
+                            <strong>Método</strong><br>
+                            1. Decantación<br>2. Destilación<br>3. Cromatografía<br>4. Centrifugación<br>5. Tamizado<br>6. Filtración<br>7. Imantación<br>8. Evaporación<br>9. Cristalización<br>10. Sublimación
+                        </div>
+                        <div>
+                            <strong>Descripción</strong><br>
+                            ( ) Retención de sólidos en papel poroso.<br>( ) Por diferencia de puntos de ebullición.<br>( ) Separación de pigmentos en fase móvil.<br>( ) Uso de mallas o cribas.<br>( ) Separación por densidad en reposo.<br>( ) Propiedades ferromagnéticas.<br>( ) Eliminación de solvente por calor.<br>( ) Formación de sólidos puros y ordenados.<br>( ) Sedimentación acelerada por giro.<br>( ) Paso directo de sólido a gas.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-group">
+                <div class="activity-header" onclick="toggleActivity(this)">Actividad 4: Laboratorio de Lógica (10 Predicciones) <span>▼</span></div>
+                <div class="activity-body">
+                    <p><strong>Reto Mental:</strong> Lee cada situación experimental y escribe en tu cuaderno qué sucederá o si el método funcionará. Justifica tu respuesta.</p>
+                    <ol style="line-height: 2;">
+                        <li><strong>Caso 1: Filtro y Agua Salada.</strong> Pasamos agua de mar por un papel filtro muy fino. ¿La sal se queda atrapada en el papel o pasa junto con el agua?</li>
+                        
+                        <li><strong>Caso 2: Latas de Aluminio.</strong> Acercamos un imán potente a una mezcla de latas de aluminio y botellas de plástico. ¿Lograremos separar el aluminio con el imán?</li>
+                        
+                        <li><strong>Caso 3: Alcohol y Agua en reposo.</strong> Mezclamos alcohol y agua en un vaso y los dejamos reposar por 2 horas. ¿Se separarán en dos capas distintas?</li>
+                        
+                        <li><strong>Caso 4: Destilación Simultánea.</strong> Calentamos una mezcla de Alcohol (hierve a 78°C) y Agua (hierve a 100°C). ¿Qué líquido se evapora y separa primero?</li>
+                        
+                        <li><strong>Caso 5: El Vaso con Aceite.</strong> Vertemos agua y aceite en un mismo recipiente. ¿Qué sustancia se posiciona en la parte superior y cuál en la inferior?</li>
+                        
+                        <li><strong>Caso 6: Agua Azucarada al Sol.</strong> Dejamos un vaso con agua y azúcar bajo el sol hasta que se seque. ¿Qué le ocurre al azúcar?</li>
+                        
+                        <li><strong>Caso 7: Sal Fina y Azúcar Fina.</strong> Intentamos separar una mezcla de sal y azúcar usando un colador (tamiz). ¿Será efectivo este método?</li>
+                        
+                        <li><strong>Caso 8: Tubo de Sangre.</strong> Al girar sangre en una centrífuga, ¿hacia dónde se van las células más pesadas (fondo o superficie)?</li>
+                        
+                        <li><strong>Caso 9: Tinta sin Solvente.</strong> Colocamos una mancha de tinta en papel filtro, pero no agregamos agua ni alcohol. ¿Se separarán los colores por sí solos?</li>
+                        
+                        <li><strong>Caso 10: Clips en el Agua.</strong> Hay clips de metal en el fondo de un vaso con agua. ¿Podemos sacarlos con un imán por fuera del vaso sin tirar el agua?</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="activity-group">
+                <div class="activity-header" onclick="toggleActivity(this)">Actividad 5: Desafío de Admisión (10 Reactivos) <span>▼</span></div>
+                <div class="activity-body">
+                    <div class="quiz-item">
+                        <p><strong>1. Método para separar dos líquidos inmiscibles con distinta densidad:</strong></p>
+                        <div class="quiz-option">a) Filtración</div>
+                        <div class="quiz-option">b) Decantación</div>
+                        <div class="quiz-option">c) Cristalización</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>2. Técnica industrial para separar los componentes del petróleo crudo:</strong></p>
+                        <div class="quiz-option">a) Decantación simple</div>
+                        <div class="quiz-option">b) Destilación fraccionada</div>
+                        <div class="quiz-option">c) Tamizado</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>3. La destilación aprovecha la diferencia en:</strong></p>
+                        <div class="quiz-option">a) Densidades</div>
+                        <div class="quiz-option">b) Puntos de ebullición</div>
+                        <div class="quiz-option">c) Magnetismo</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>4. ¿Cómo separarías una mezcla de piedras y arena?</strong></p>
+                        <div class="quiz-option">a) Cromatografía</div>
+                        <div class="quiz-option">b) Tamizado</div>
+                        <div class="quiz-option">c) Destilación</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>5. La centrifugación separa componentes basándose en:</strong></p>
+                        <div class="quiz-option">a) Tamaño de partícula</div>
+                        <div class="quiz-option">b) Densidad (acelerada)</div>
+                        <div class="quiz-option">c) Color</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>6. Método para separar limalla de hierro de harina:</strong></p>
+                        <div class="quiz-option">a) Tamizado</div>
+                        <div class="quiz-option">b) Imantación</div>
+                        <div class="quiz-option">c) Decantación</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>7. Para analizar los colores que componen una tinta negra se usa:</strong></p>
+                        <div class="quiz-option">a) Cromatografía</div>
+                        <div class="quiz-option">b) Destilación</div>
+                        <div class="quiz-option">c) Evaporación</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>8. En la filtración, el sólido retenido en el papel se llama:</strong></p>
+                        <div class="quiz-option">a) Residuo</div>
+                        <div class="quiz-option">b) Filtrado</div>
+                        <div class="quiz-option">c) Solución</div>
+                    </div>
+                    <div class="quiz-item">
+                        <p><strong>9. Método para obtener sal sólida a partir de agua de mar:</strong></p>
+                        <div class="quiz-option">a) Decantación</div>
+                        <div class="quiz-option">b) Evaporación</div>
+                        <div class="quiz-option">c) Tamizado</div>
+                    </div>
+                    <div class="quiz-item" style="border-bottom: none;">
+                        <p><strong>10. El tamizado separa sólidos basándose en:</strong></p>
+                        <div class="quiz-option">a) Su solubilidad</div>
+                        <div class="quiz-option">b) El tamaño de sus partículas</div>
+                        <div class="quiz-option">c) Su punto de fusión</div>
+                    </div>
+                </div> </div> </div> </div> </div> ```
+
+        </article>
+    </div>
+    <script>
+        // Función para abrir y cerrar Capítulos
+        function toggleLevel(header) {
+            const content = header.nextElementSibling;
+            const arrow = header.querySelector('span:last-child');
+            if (content.style.display === "block") {
+                content.style.display = "none";
+                arrow.textContent = "▼";
+            } else {
+                content.style.display = "block";
+                arrow.textContent = "▲";
+            }
+        }
+
+        // Función para abrir y cerrar Temas (1.1, 1.2, etc.)
+        function toggleTopic(btn) {
+            const details = btn.parentElement.nextElementSibling;
+            if (details.style.display === "none" || !details.style.display) {
+                details.style.display = "block";
+                btn.textContent = "Cerrar Tema";
+                btn.style.background = "#64748b";
+            } else {
+                details.style.display = "none";
+                btn.textContent = "Abrir Tema";
+                btn.style.background = "var(--primary)";
+            }
+            // Al abrir/cerrar no afecta el progreso, solo el checkbox lo hace
+        }
+
+        // Función para cambiar entre Guía, Video y Actividades
+        function switchTab(btn, tabName) {
+            const container = btn.closest('.topic-details');
+            container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            container.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            container.querySelector(`.tab-content[data-tab="${tabName}"]`).classList.add('active');
+        }
+
+        // Función para el acordeón de las Actividades
+        function toggleActivity(header) {
+            const body = header.nextElementSibling;
+            body.style.display = body.style.display === "block" ? "none" : "block";
+        }
+
+        // LÓGICA DE LA BARRA DE PROGRESO (Igual a Matemáticas)
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.topic-checkbox');
+            const total = checkboxes.length;
+            let checkedCount = 0;
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) checkedCount++;
+            });
+
+            const percentage = total > 0 ? Math.round((checkedCount / total) * 100) : 0;
+            
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            if(progressBar && progressText) {
+                progressBar.style.width = percentage + '%';
+                progressText.textContent = percentage + '% Completado';
+            }
+        }
+
+        // Inicializar la barra al cargar la página
+        window.onload = updateProgress;
+    </script>
+</body>
+</html>
